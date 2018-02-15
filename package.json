@@ -1,0 +1,22 @@
+{
+  "name": "joy-of-milner",
+  "version": "0.0.1",
+  "description": "A talk about Hindley-Milner",
+  "author": "Bodil Stokke",
+  "licenses": [
+    "GPL-3.0+"
+  ],
+  "dependencies": {
+    "@types/node": "^9.4.6",
+    "babel-polyfill": "^6.26.0",
+    "brace": "^0.11.0",
+    "eulalie": "^2.5.4",
+    "eventemitter3": "^1.2.0",
+    "pink-repl": "0.0.1",
+    "repr.js": "^0.1.0",
+    "tap": "^11.1.0",
+    "typescript": "^2.7.1",
+    "webpack": "^1.13.1",
+    "webworker-loader": "^0.1.0"
+  }
+}

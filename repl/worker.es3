@@ -1,0 +1,69 @@
+// WARNING: This file has the `.es3` extension because if Webpack
+// runs Babel on it, a `"use strict"` statement will be added, and
+// we lose the ability to eval code using a `with` block.
+
+require("babel-polyfill");
+var represent = require("repr.js");
+var lang = require("../code/lang");
+
+function repr(v) {
+  if (typeof v === "symbol") {
+    return v.toString();
+  }
+  return represent.repr(v);
+}
+
+function postRepr(v) {
+  function p(v) {
+    postMessage(["result", v]);
+  }
+  function err(v) {
+    postMessage(["error", v]);
+  }
+  if (v instanceof Error) {
+    err(v.name + ": " + v.message);
+    return;
+  }
+  p(v === undefined ? undefined : repr(v));
+}
+
+function log() {
+  var l = Array.prototype.slice
+    .call(arguments)
+    .map(function(v) {
+      return typeof v === "string" ? v : repr(v);
+    })
+    .join(" ");
+  postMessage(["log", l]);
+}
+
+var exports = {
+  console: {
+    log: log,
+    error: log,
+    info: log
+  }
+};
+Object.assign(exports, lang);
+
+onmessage = function(e) {
+  var data = e.data,
+    output = false,
+    expand = false;
+  if (data["eval"]) {
+    data = data["eval"];
+    output = true;
+  } else if (data["load"]) {
+    data = data["load"];
+    output = false;
+  }
+  try {
+    var res = eval("with (exports) { " + data + "}");
+    if (output && res !== "use strict") {
+      postRepr(res);
+    }
+  } catch (e) {
+    console.error(e);
+    postMessage(["error", e.name + ": " + e.message]);
+  }
+};
